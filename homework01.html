@@ -1,0 +1,97 @@
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Comp 425 Homework</title>
+    <link rel="stylesheet" href="../standard.css" type="text/css"/>
+    <script type="text/javascript" src="../outline.js"></script>
+    <script type="text/javascript" src="/gfoust/sh/scripts/shCore.js"></script>
+    <script type="text/javascript" src="/gfoust/sh/scripts/shBrushCpp.js"></script>
+    <script type="text/javascript">
+      SyntaxHighlighter.defaults.gutter = false;
+      SyntaxHighlighter.all();
+    </script>
+    <link type="text/css" rel="stylesheet" href="/gfoust/sh/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet"
+          href="/gfoust/sh/styles/shThemeFoust.css"/>
+    <style>
+      ol > li { margin-bottom: 4em; }
+    </style>
+  </head>
+  <body>
+    <ol>
+      <li>
+        Copy the <a href="hello_mpi.cpp.html">hello_mpi.cpp</a> program to
+        <kbd>pleiades</kbd> and make sure you can compile and run it.  There
+        is nothing to turn in for this step, but it is recommended to make
+        sure you can compile and run MPI programs successfully.
+      </li>
+      <li>
+        Write an MPI program named <kbd>hello_name.cpp</kbd> which does the
+        following:
+        <ul class="spaced">
+          <li>
+            Ask the user to enter his name.  You may limit the input to 100
+            characters.
+          </li>
+          <li>
+            Send the user name from the root process to each other MPI process.
+          </li>
+          <li>
+            Each process (including the root process) should
+            print <code>Hello, <var>name</var>, from process <var>N</var>!</code>
+            where <var>name</var> is the name entered by the user
+            and <var>N</var> is the rank of the process.
+          </li>
+        </ul>
+        <em>Note:</em> You send a string just as an array of characters.  In
+        this case, the <code>buffer</code> parameter would be a pointer to
+        the start of the array, the <code>type</code> parameter would be
+        MPI_CHAR, and the <code>count</code> character would be the number
+        of characters you are sending.  (Don't forget the null character.)
+        <p>
+          For example, you could send a C-string like this:
+        </p>
+        <pre class="brush:cpp">
+char name[100] = "Suzy";
+
+MPI_Send(name, 100, MPI_CHAR, destination, tag, MPI_COMM_WORLD);
+</pre>
+       </li>
+      <li>Write an MPI program maned <kbd>avg_dist.cpp</kbd> which determines
+        the average distance of a group of experimental numbers from a target
+        number.  For example, if our experimental numbers are <kbd>{ 4, 11, 18
+        }</kbd> and our target number is <kdb>10</kdb>, then the average
+        distance is <kbd>(6 + 1 + 8) / 3 = 5</kbd>.
+        <p>
+          You must solve this problem as follows:
+        </p>
+        <ul class="spaced">
+          <li>
+            The user should first input the target number.  (Do not print a
+            prompt; let's assume the user knows what he is doing.)
+          </li>
+          <li>
+            After that, the user should enter as many experimental numbers as
+            there are processes.  (You are programmers; you should be able to
+            whip a program that spits out random numbers.)
+          </li>
+          <li>
+            The root process should send each other process the target number
+            and one experimental number.  (It will need to keep one for
+            itself.)
+          </li>
+          <li>
+            Each other process should then calculate the distance from its
+            experimental number to the target number and send it back to the
+            root process.  (The distance should always be positive.)
+          </li>
+          <li>
+            The root process should average the results and then print out the
+            answer.  (I couldn't think of anything to put in parentheses for
+            this one.)
+          </li>
+        </ul>
+      </li>
+    </ol>
+  </body>
+</html>
