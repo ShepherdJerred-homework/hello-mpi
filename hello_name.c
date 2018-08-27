@@ -23,13 +23,16 @@ void printName(int rank, char* name) {
 
     char *message = malloc(
             strlen(MESSAGE_PART_ONE) + strlen(MESSAGE_PART_TWO) + strlen(MESSAGE_PART_THREE) + strlen(name) + SIZE_OF_INT + SIZE_OF_NULL_TERMINATOR);
+    message[0] = '\0';
 
-    strcpy(message, MESSAGE_PART_ONE);
+    int lastNameIndex = (int) strlen(name) - 1;
+    name[lastNameIndex] = '\0';
+
+    strcat(message, MESSAGE_PART_ONE);
     strcat(message, name);
     strcat(message, MESSAGE_PART_TWO);
     strcat(message, rankString);
     strcat(message, MESSAGE_PART_THREE);
-    strcat(message, "\n");
 
     puts(message);
 
@@ -38,22 +41,28 @@ void printName(int rank, char* name) {
 }
 
 void sendMessage(int rank) {
-    char name[MAX_NAME_SIZE];
-    puts("What is your name?\n");
-    gets(name);
+    int numberOfProcesses;
+    MPI_Comm_size(MPI_COMM_WORLD, &numberOfProcesses);
 
-    MPI_Send(name, (int) strlen(name), MPI_CHAR, ROOT_PROCESS_ID, DEFAULT_TAG, MPI_COMM_WORLD);
+    char name[MAX_NAME_SIZE + SIZE_OF_NULL_TERMINATOR];
+    puts("What is your name?");
+    fgets(name, MAX_NAME_SIZE, stdin);
+
+    int i;
+    for (i = ROOT_PROCESS_ID + 1; i < numberOfProcesses; i++) {
+        MPI_Send(&name, (int) strlen(name), MPI_CHAR, i, DEFAULT_TAG, MPI_COMM_WORLD);
+    }
 
     printName(rank, name);
 }
 
 void receiveMessage(int rank) {
-    char* message;
+    char* name = malloc(MAX_NAME_SIZE + SIZE_OF_NULL_TERMINATOR);
     MPI_Status status;
 
-    MPI_Recv(&message, MAX_NAME_SIZE + SIZE_OF_NULL_TERMINATOR, MPI_CHAR, ROOT_PROCESS_ID, DEFAULT_TAG, MPI_COMM_WORLD, &status);
+    MPI_Recv(name, MAX_NAME_SIZE + SIZE_OF_NULL_TERMINATOR, MPI_CHAR, ROOT_PROCESS_ID, DEFAULT_TAG, MPI_COMM_WORLD, &status);
 
-    printName(rank, message);
+    printName(rank, name);
 }
 
 int main(int argc, char **argv) {
