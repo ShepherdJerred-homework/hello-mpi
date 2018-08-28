@@ -32,12 +32,13 @@ int main(int argc, char **argv) {
         for (i = 0; i < numberOfProcesses; i++) {
 //            printf("Enter an experimental value for pid %d", processId);
             int experimentalNumber;
-            scanf("%d", &experimentalNumber + i);
+            scanf("%d", &experimentalNumber);
 
             if (i == ROOT_PROCESS_ID) {
-//                printf("target: %d, exp: %d", target, experimentalNumber);
+//                printf("root target: %d, exp: %d\n", target, experimentalNumber);
                 totalDifference += calcDistance(target, experimentalNumber);
             } else {
+//                printf("sending: e: %d t: %d\n", experimentalNumber, target);
                 MPI_Send(&target, SIZE_OF_INT, MPI_INT, i, DEFAULT_TAG, MPI_COMM_WORLD);
                 MPI_Send(&experimentalNumber, SIZE_OF_INT, MPI_INT, i, DEFAULT_TAG, MPI_COMM_WORLD);
             }
@@ -48,10 +49,11 @@ int main(int argc, char **argv) {
             int differenceFromProcess;
             MPI_Recv(&differenceFromProcess, SIZE_OF_INT, MPI_INT, i, DEFAULT_TAG, MPI_COMM_WORLD, &status);
             totalDifference += differenceFromProcess;
+//            printf("%d target: %d, exp: %d\n", i, target, differenceFromProcess);
         }
 
         int averageDifference = totalDifference / numberOfProcesses;
-        printf("%d", averageDifference);
+        printf("%d\n", averageDifference);
     } else {
         MPI_Status status;
         int targetNumber;
@@ -60,6 +62,8 @@ int main(int argc, char **argv) {
         MPI_Recv(&experimentalNumber, SIZE_OF_INT, MPI_INT, ROOT_PROCESS_ID, DEFAULT_TAG, MPI_COMM_WORLD, &status);
 
         int distance = calcDistance(targetNumber, experimentalNumber);
+
+//        printf("recv e: %d t: %d\n", targetNumber, experimentalNumber);
 
         MPI_Send(&distance, SIZE_OF_INT, MPI_INT, ROOT_PROCESS_ID, DEFAULT_TAG, MPI_COMM_WORLD);
     }
