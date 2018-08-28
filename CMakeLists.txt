@@ -10,4 +10,4 @@ SET(CMAKE_C_COMPILER mpicc)
 SET(CMAKE_CXX_COMPILER mpicxx)
 
 set(SOURCE_FILES main.c)
-add_executable(hellompi hello_name.c)
+add_executable(hellompi avg_dist.c)
